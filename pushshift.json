@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "all_awardings": [],
+            "associated_award": null,
+            "author": "gojo345",
+            "author_flair_background_color": null,
+            "author_flair_css_class": null,
+            "author_flair_richtext": [],
+            "author_flair_template_id": null,
+            "author_flair_text": null,
+            "author_flair_text_color": null,
+            "author_flair_type": "text",
+            "author_fullname": "t2_6jl8r",
+            "author_patreon_flair": false,
+            "author_premium": false,
+            "awarders": [],
+            "body": "Needs a larger sample size.\n\nYou need a \"BetsBot\" a users could call the bot in any comment thread that is discussing any particular symbol in any manner.The format would be something like... {nameofbot} {symbol} {sentiment \":)\" or \":(\" }\n\nFor example \n\n    USER1 posts: \n    \n&gt;{link} here is a link to an article on TSLA Elon is taking this shit stright to mars!\n\n    USER2 reply to user 1:\n    \n&gt; betsbot TSLA :)\n\n    BETSBOT reply to USER2:\n    \n&gt; Bleep Bloop this is bets bot. our systems have recorded a positive sentiment for TSLA. All users reading this please reply \"yes\" if you agree that this sentiment correctly describes the original comment, or \"no\" if this sentiment is off base.\n\n-----\n\n**Bunch of different users reply to betsbot with \"yes\" and \"no\"**\n\n-----\n\n    USER3\n\n&gt;yes\n\n    USER4\n\n&gt;yes\n\n    USER5\n\n&gt;yes\n\n    USER6\n\n&gt;no\n\n    USER7\n\n&gt;yes\n\n-----\n\nThe bets bot would operate in every thread in /r/wallstreetbets and would compile sentiment (with maybe some statistical weight for threads started by more long standing users)\n\nThe bot would simply compile the sentiment for each symbol it received through the day, and the data could be accessed as raw data for which any user could compile his or her own list of picks.",
+            "collapsed_because_crowd_control": null,
+            "created_utc": 1588264783,
+            "gildings": {},
+            "id": "fp2nj2i",
+            "is_submitter": false,
+            "link_id": "t3_gav1d6",
+            "locked": false,
+            "no_follow": true,
+            "parent_id": "t1_fp1y68o",
+            "permalink": "/r/wallstreetbets/comments/gav1d6/wsb_sentiment_has_beaten_the_market_by_323_over/fp2nj2i/",
+            "retrieved_on": 1588266549,
+            "score": 1,
+            "send_replies": true,
+            "stickied": false,
+            "subreddit": "wallstreetbets",
+            "subreddit_id": "t5_2th52",
+            "total_awards_received": 0,
+            "treatment_tags": []
+        }
+    ]
+}
