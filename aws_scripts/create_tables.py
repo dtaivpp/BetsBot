@@ -2,31 +2,6 @@ import boto3
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2', endpoint_url="http://localhost:8000")
 
-symbols_table = dynamodb.create_table(
-    TableName='Symbols',
-    KeySchema=[
-        {
-            'AttributeName': 'symbol',
-            'KeyType': 'HASH'  #Partition key
-        }
-    ],
-    AttributeDefinitions=[
-        {
-            'AttributeName': 'company',
-            'AttributeType': 'S'
-        },
-        {
-            'AttributeName': 'alt_Symbols',
-            'AttributeType': 'S'
-        },
-
-    ],
-    ProvisionedThroughput={
-        'ReadCapacityUnits': 10,
-        'WriteCapacityUnits': 10
-    }
-)
-
 users_bets_table = dynamodb.create_table(
     TableName='Users_Bets',
     KeySchema=[
@@ -131,5 +106,3 @@ symbol_outlook_table = dynamodb.create_table(
         'WriteCapacityUnits': 10
     }
 )
-
-print("Table status:", symbols_table.table_status)
