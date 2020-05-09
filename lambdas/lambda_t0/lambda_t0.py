@@ -9,9 +9,12 @@ client = boto3.client('lambda')
 symbol_pattern =r'^(?P<PreXChangeCode>[a-z]{2,4}:(?![a-z\d]+\.))?(?P<Stock>[a-z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?P<PostXChangeCode>\.[a-z]{2})?$'
 
 
-def lambda_t0(uri: str):
+def lambda_t0(event, context):
     # Get Reddit Comments from api
-    comments = get_comments(uri)
+    if context != None:
+        comments = get_comments(uri)
+    else:
+        comments = sample_comments()
 
     valid_votes = set({":)", ":(", "):", "(:"})
     votes = []
@@ -23,6 +26,8 @@ def lambda_t0(uri: str):
         # sanitizes the word list from comment
         tmp = [word.strip() for word in comment['body'].lower().split(" ")[1:]]
         
+        comment['arg_list'] = tmp
+
         if tmp[0].startswith("u/"):
             user_queries.append(comment)
             continue
@@ -89,6 +94,7 @@ def get_comments(uri: str):
     data = response.json()
 
     return data['data']
+
 
 if __name__=='__main__':
     lambda_t0('https://api.pushshift.io/reddit/comment/search?subreddit=wallstreetbets&q=!BetsBot')
