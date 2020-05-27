@@ -46,7 +46,7 @@ daily_bets_table = dynamodb.create_table(
     AttributeDefinitions=[
         {
             'AttributeName': 'bet',
-            'AttributeType': 'b'
+            'AttributeType': 'BOOL'
         },
 
     ],
