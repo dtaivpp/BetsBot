@@ -27,12 +27,15 @@ def lambda_vote(event, context):
         except InvalidSentiment:
             reject.append(comment)
 
+    batch_write, update = process_comments(process)
+
     # send to db
+
 
     # send responses
 
 
-def process_comments(comments: list):
+def process_comments(comments: list) -> (batch_create: list, update: list):
     update_sentiment = []
     batch_write = []
 
@@ -51,12 +54,16 @@ def process_comments(comments: list):
             if 'Item' in response:
                 item = response['Item']
                 
-#               ##### TO DO WHAT TO DO IF THEIR VOTE MATCHES PREVIOUS
+                ##### TO DO WHAT TO DO IF THEIR VOTE MATCHES PREVIOUS
                 if item['bet'] != comment['sentiment']:
-                    update_sentiment.append(comments)
+                    update_sentiment.append(comment)
+                else:
+                    pass
 
             else:
                 batch_write.append(comment)
+
+    return batch_write, update_sentiment
 
 
 def valid_vote(comment):
@@ -79,8 +86,17 @@ def calc_sentiment(comment: dict) -> bool:
     
     raise InvalidSentiment()
 
-
 def batch_write(comments: list):
+    with table.batch_writer() as batch:
+        batch.put_item(
+            Item={
+                "username": f"u/{comment['author']}",
+                "symbol": comment['arg_list'][0],
+                "bet": comment['sentiment']
+                }
+            }
+        )
+    
     pass
 
 def update_sentiment(comments: list):
