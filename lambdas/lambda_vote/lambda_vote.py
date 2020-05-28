@@ -1,5 +1,8 @@
 import boto3
 import praw
+import time
+import math
+
 from os import environ
 from StockList import stocks
 
@@ -110,7 +113,9 @@ def batch_write(comments: list):
             Item={
                 "username": f"u/{comment['author']}",
                 "symbol": comment['arg_list'][0],
-                "bet": comment['sentiment']
+                "bet": comment['sentiment'],
+                "created_utc": comment['created_utc'],
+                "updated_utc": math.floor(time.time())
                 }
             }
         )
@@ -126,9 +131,10 @@ def update_sentiment(comments: list):
                 "username": f"u/{comment['author']}",
                 "symbol": comment['arg_list'][0]
             },
-            UpdateExpression='SET bet = :val1',
+            UpdateExpression='SET bet = :val1, updated_utc = :val2',
             ExpressionAttributeValues={
-                ':val1': comment['sentiment']
+                ':val1': comment['sentiment'],
+                ':val2': math.floor(time.time())
             }
         )
 
