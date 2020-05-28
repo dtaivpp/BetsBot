@@ -1,9 +1,18 @@
 import boto3
+import praw
+from os import environ
 from StockList import stocks
 
-
+# Get DynamoDB Resource
 dynamodb = boto3.resource('dynamodb', region_name='us-east-3')
 table = dynamodb.Table('Daily_Bets')
+
+# Authenticate to reddit
+reddit = praw.Reddit(client_id=environ["client_id"],
+                     client_secret=environ["client_secret"],
+                     password=environ["password"],
+                     user_agent="betsbot by /u/dtaivp",
+                     username="dtaivp")
 
 
 class InvalidSentiment(Exception):
@@ -22,17 +31,21 @@ def lambda_vote(event, context):
             if valid_vote(comment):
                 process.append(comment)
             else:
+                comment['reject-reason'] = "Invalid Symbol"
                 reject.append(comment)
 
         except InvalidSentiment:
+            comment['reject-reason'] = "Invalid Sentiment"
             reject.append(comment)
 
-    batch_write, update = process_comments(process)
+    batch_write_list, update_list = process_comments(process)
 
     # send to db
-
+    batch_write(batch_write_list)
+    update_sentiment(update_list)
 
     # send responses
+    comment_response(processed, reject)
 
 
 def process_comments(comments: list) -> (batch_create: list, update: list):
@@ -67,7 +80,9 @@ def process_comments(comments: list) -> (batch_create: list, update: list):
 
 
 def valid_vote(comment):
-    # Check if the symbol is in the stock list
+    '''
+    Check if the symbol is in the stock list
+    '''
     if comment['arg_list'][0] in stocks:
         return True
     
@@ -87,6 +102,9 @@ def calc_sentiment(comment: dict) -> bool:
     raise InvalidSentiment()
 
 def batch_write(comments: list):
+    '''
+    Batch Write new user bets to dynamodb
+    '''
     with table.batch_writer() as batch:
         batch.put_item(
             Item={
@@ -96,8 +114,44 @@ def batch_write(comments: list):
                 }
             }
         )
-    
-    pass
+
 
 def update_sentiment(comments: list):
-    pass
+    '''
+    Update bets for existing bets in dynamodb
+    '''
+    for comment in comments:
+        table.update_item(
+            Key={
+                "username": f"u/{comment['author']}",
+                "symbol": comment['arg_list'][0]
+            },
+            UpdateExpression='SET bet = :val1',
+            ExpressionAttributeValues={
+                ':val1': comment['sentiment']
+            }
+        )
+
+
+def comment_response(processed: list, rejected: list):
+    '''
+    Respond to comments
+    '''
+    for comment in rejected:
+        reddit_comment = reddit.comment(comment["id"])
+        response = ""
+        
+        if comment['reject-reason'] == "Invalid Sentiment":
+            response = """Sorry but we didn't understand your vote. Please only use :) or :("""
+
+        if comment['reject-reason'] == "Invalid Symbol"
+            response = """Sorry I dont have that stock symbol. I do NASDAQ, AMEX, or NYSE"""
+        
+        if response == "":
+            response = """Bro I dont even know. Paging u/dtaivp"""
+
+        reddit_comment.reply(response)
+    
+    for comment in processed:
+        reddit_comment = reddit.comment(comment["id"])
+        reddit_comment.reply("Yeah I got your vote.")
