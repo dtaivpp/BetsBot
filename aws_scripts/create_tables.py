@@ -8,7 +8,7 @@ users_bets_table = dynamodb.create_table(
         {
             'AttributeName': 'username',
             'KeyType': 'HASH'  #Partition key
-        }
+        },
         {
             'AttributeName': 'symbol',
             'KeyType': 'range'
@@ -37,7 +37,7 @@ daily_bets_table = dynamodb.create_table(
         {
             'AttributeName': 'username',
             'KeyType': 'HASH'  #Partition key
-        }
+        },
         {
             'AttributeName': 'symbol',
             'KeyType': 'range'
@@ -48,6 +48,14 @@ daily_bets_table = dynamodb.create_table(
             'AttributeName': 'bet',
             'AttributeType': 'BOOL'
         },
+        {
+            'AttributeName': 'created_utc'
+            'AttributeNumber': 'N'
+        },
+                {
+            'AttributeName': 'updated_utc'
+            'AttributeNumber': 'N'
+        }
 
     ],
     ProvisionedThroughput={
@@ -62,7 +70,7 @@ users_table = dynamodb.create_table(
         {
             'AttributeName': 'username',
             'KeyType': 'HASH'  #Partition key
-        }
+        },
         {
             'AttributeName': 'source',
             'KeyType': 'range'
@@ -91,14 +99,21 @@ symbol_outlook_table = dynamodb.create_table(
         {
             'AttributeName': 'symbol',
             'KeyType': 'HASH'  #Partition key
+        },
+        {
+            'AttributeName': 'date',
+            'KeyType': 'range'
         }
     ],
     AttributeDefinitions=[
         {
-            'AttributeName': 'outlook',
-            'AttributeType': 'b'
+            'AttributeName': 'positive',
+            'AttributeType': 'N'
         },
-
+        {
+            'AttributeName': 'negative',
+            'AttributeType': 'N'
+        }
 
     ],
     ProvisionedThroughput={
