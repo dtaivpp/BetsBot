@@ -49,11 +49,11 @@ daily_bets_table = dynamodb.create_table(
             'AttributeType': 'BOOL'
         },
         {
-            'AttributeName': 'created_utc'
+            'AttributeName': 'created_utc',
             'AttributeNumber': 'N'
         },
                 {
-            'AttributeName': 'updated_utc'
+            'AttributeName': 'updated_utc',
             'AttributeNumber': 'N'
         }
 
@@ -101,7 +101,7 @@ symbol_outlook_table = dynamodb.create_table(
             'KeyType': 'HASH'  #Partition key
         },
         {
-            'AttributeName': 'date',
+            'AttributeName': 'date', #YYYYMMDD
             'KeyType': 'range'
         }
     ],
