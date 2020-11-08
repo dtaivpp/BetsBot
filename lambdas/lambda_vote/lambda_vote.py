@@ -14,7 +14,7 @@ table = dynamodb.Table('Daily_Bets')
 reddit = praw.Reddit(client_id=environ["client_id"],
                      client_secret=environ["client_secret"],
                      password=environ["password"],
-                     user_agent="betsbot by /u/dtaivp",
+                     user_agent="Betsbot by /u/dtaivp",
                      username="dtaivp")
 
 
@@ -23,6 +23,9 @@ class InvalidSentiment(Exception):
 
 
 def lambda_vote(event, context):
+    '''
+    Processes a vote action
+    '''
     comments = event['comments']
     process = []
     reject = []
@@ -93,6 +96,9 @@ def valid_vote(comment):
 
 
 def calc_sentiment(comment: dict) -> bool:
+    '''
+    Determine if comment is positive or negative
+    '''
     positive = set(":)", "(:","=)","(=")
     negative = set(":(", "):","=(",")=")
 
@@ -148,10 +154,10 @@ def comment_response(processed: list, rejected: list):
         response = ""
         
         if comment['reject-reason'] == "Invalid Sentiment":
-            response = """Sorry but we didn't understand your vote. Please only use :) or :("""
+            response = """Not even a valid sentiment. Lets keep it simple stupid. Only use :) or :("""
 
         if comment['reject-reason'] == "Invalid Symbol"
-            response = """Sorry I dont have that stock symbol. I do NASDAQ, AMEX, or NYSE"""
+            response = """I dont have that stock symbol. I do NASDAQ, AMEX, or NYSE"""
         
         if response == "":
             response = """Bro I dont even know. Paging u/dtaivp"""
