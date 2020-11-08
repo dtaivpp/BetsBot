@@ -25,7 +25,7 @@ def lambda_daily_price_fetcher(event, context):
 
     store_prices(price_list)
 
-    pass
+    return
 
 def get_daily_tickers():
     date = current_day_utc()
