@@ -25,6 +25,7 @@ def lambda_query_symbol(event, context):
 
     no_votes, votes = process_comments(comments)
 
+    comment_response(no_votes, votes)
     
 
 def process_comments(comments: list) -> (no_votes: list, votes: list):
@@ -34,7 +35,6 @@ def process_comments(comments: list) -> (no_votes: list, votes: list):
 
     for comment in comments:
         try:
-            # Check if user already has voted
             response = table.get_item(Key={
                 'symbol': comment['arg_list'][0]
             })
@@ -62,11 +62,19 @@ def comment_response(no_votes: list, votes: list):
     '''
     for comment in votes:
         reddit_comment = reddit.comment(comment["id"])
-        response = ""
-        volume = comment['positive'] + comment['negative']
+        response = "Volume: {volume}\n"
+
+        positive, negative = comment['positive'], comment['negative']
+        volume = positive + negative
 
         if positive > negative:
-            response += f""
+            response += f"Percent Positive: {percent_calc(positive, negative)}%"
+
+        if negative > positive:
+            response += f"Percent Negative: {percent_calc(negative, positive)}%"
+
+        if negative == positive:
+            response += "Its an even split. 50-50"
 
         reddit_comment.reply(response)
     
@@ -74,6 +82,12 @@ def comment_response(no_votes: list, votes: list):
         reddit_comment = reddit.comment(comment["id"])
         reddit_comment.reply("Yeah... no one has voted on that....")
 
+
+def percent_calc(numerator: int, denominator: int) => int:
+    if denominator == 0 and numerator > 0:
+        return 100
+
+    return math.ceil(numerator/denominator)
 
 def vote_for_day_utc() -> int:
     """
