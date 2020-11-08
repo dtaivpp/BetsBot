@@ -8,40 +8,49 @@ client = boto3.client('lambda')
 
 symbol_pattern =r'^(?P<PreXChangeCode>[a-z]{2,4}:(?![a-z\d]+\.))?(?P<Stock>[a-z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?P<PostXChangeCode>\.[a-z]{2})?$'
 
-
 def lambda_t0(event, context):
-    # Get Reddit Comments from api
+    '''
+    Comment Collection and Catagorization
+    '''
+
+    # Used for testing outside aws
     if context != None:
         comments = get_comments(uri)
     else:
         comments = sample_comments()
 
-    valid_votes = set({":)", ":(", "):", "(:"})
+    # Set of valid vote options
+    valid_votes = set({":(", "):", "=(", ")=", ":)", "(:","=)","(="})
     votes = []
     symbol_queries = []
     user_queries = []
     send_help = []
 
+
     for comment in comments:
-        # sanitizes the word list from comment
+        # Cleans comment for processing
         tmp = [word.strip() for word in comment['body'].lower().split(" ")[1:]]
         
+        # todo: extract comment to own class
         comment['arg_list'] = tmp
 
+        # Catagorize 
         if tmp[0].startswith("u/"):
             user_queries.append(comment)
             continue
 
-        if re.match(symbol_pattern, tmp[0]):
+        if re.match(symbol_pattern, tmp[0]) and len(tmp) == 1:
             symbol_queries.append(comment)
             continue
 
-        if tmp[1] in valid_votes:
+        if len(tmp) > 1 and tmp[1] in valid_votes:
             votes.append(comment)
             continue
 
+        # if it matches nothing I didnt get it
         send_help.append(comment)
-        
+    
+    # Send each list to respective lambdas for processing
     if len(votes) > 0:
         disptach_lambda(votes, 'lambda_vote')
     
@@ -56,6 +65,9 @@ def lambda_t0(event, context):
 
 
 def disptach_lambda(comment_list, target):
+    '''
+    Abstraction for dispatching lambda via boto
+    '''
     #[print(comment['author', target]) for comment in comment_list]
     client.invoke(
             FunctionName=target,
@@ -80,7 +92,9 @@ def last_min_epoch_time():
 
 
 def get_comments(uri: str):
-    
+    '''
+    Get Comments from PushShift
+    '''
     after, before = last_min_epoch_time()
     uri += f'&after={after}&before={before}'
     
